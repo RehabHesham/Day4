@@ -13,17 +13,38 @@ import {
   deletePostValidator,
 } from "../middlewares/validator.js";
 import validationHandler from "../middlewares/validationHandler.js";
-
+import authMiddlware from "../middlewares/authMiddlware.js";
+import authorize from "../middlewares/authorize.js";
 const router = Router();
 
-
 // can use req.user
-router.post("/", createPostValidator, validationHandler, createPost);
+router.post(
+  "/",
+  authMiddlware,
+  authorize("user"),
+  createPostValidator,
+  validationHandler,
+  createPost,
+);
 router.get("/", getAllPost);
 
-router.put("/:id", updatePostValidator, validationHandler, updatePost);
-router.delete("/:id", deletePostValidator, validationHandler, deletePost);
+router.put(
+  "/:id",
+  authMiddlware,
+  authorize("user"),
+  updatePostValidator,
+  validationHandler,
+  updatePost,
+);
+router.delete(
+  "/:id",
+  authMiddlware,
+  authorize("user", "admin"),
+  deletePostValidator,
+  validationHandler,
+  deletePost,
+);
 
-router.post("/:id/comment", addComment);
+router.post("/:id/comment", authMiddlware, authorize("user"), addComment);
 
 export default router;
